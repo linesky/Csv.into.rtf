@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSV to RTF</title>
+<style>
+  body {
+    background-color: yellow;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  textarea {
+    width: 500px;
+    height: 200px;
+    margin: 10px;
+    padding: 10px;
+    font-size: 16px;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;
+  }
+</style>
+</head>
+<body>
+<input type="file" id="file-selector" >
+
+<textarea id="csvInput" placeholder="Paste CSV content here"></textarea>
+<textarea id="rtfOutput" placeholder="RTF output will appear here"></textarea>
+<button id="convertButton">Convert to RTF</button>
+<button id="saves">save</button>
+<script>
+document.getElementById('convertButton').addEventListener('click', () => {
+  const csvInput = document.getElementById('csvInput').value.trim();
+  const rtfOutput = document.getElementById('rtfOutput');
+
+  if (!csvInput) {
+    alert('Please paste the CSV content in the input area.');
+    return;
+  }
+
+  const lines = csvInput.split('\n');
+  let rtfContent = `{\rtf1\ansi\deff0\n`;
+  
+  lines.forEach(line => {
+    const cells = line.split(',');
+    rtfContent += cells.map(cell => `\\cellx${cell}`).join('\\intbl ') + '\\row\n';
+  });
+
+  rtfContent += '}';
+
+  rtfOutput.value = rtfContent;
+});
+</script>
+<script>
+    codeInput = document.getElementById('csvInput');
+    const fileSelector = document.getElementById('file-selector');
+    fileSelector.addEventListener('change', (event) => {
+        const fileList = event.target.files[0];
+        
+      var reader = new FileReader();
+      reader.readAsText(fileList);
+    reader.onload =readerEvent => {
+        var values=readerEvent.target.result;
+        codeInput.value=values;
+    }
+     
+    });
+ 
+</script>
+<script>
+    const saveBtn = document.getElementById('saves');
+    
+    
+    saveBtn.addEventListener('click', function(){
+       let name =prompt("filename","new");
+       var tempLink = document.createElement("a");
+
+       var codeInput = document.getElementById("rtfOutput");
+       var outputs = codeInput.value;
+       var taBlob = new Blob([ outputs], {type: 'text/plain'});
+       tempLink.setAttribute('href', URL.createObjectURL(taBlob));
+    tempLink.setAttribute('download', `${name.toLowerCase()}.rtf`);
+    tempLink.click();
+
+    URL.revokeObjectURL(tempLink.href);
+});
+  </script>
+
+</body>
+</html>
+
